@@ -4,7 +4,7 @@ const useToastify = () => {
   const toastSuccess = (message: string) => {
     toast.success(message, {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 1000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -17,7 +17,7 @@ const useToastify = () => {
   const toastError = (message: string) => {
     toast.error(message, {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 1000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,

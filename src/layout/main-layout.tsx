@@ -1,5 +1,7 @@
 import Navbar from "../components/navbar.tsx";
 import { Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Footer from "../components/footer.tsx";
 
 const MainLayout = () => {
   return (
@@ -8,7 +10,19 @@ const MainLayout = () => {
       <div className="px-20">
         <Outlet />
       </div>
-      {/*<Footer/>*/}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <Footer/>
     </>
   );
 };
