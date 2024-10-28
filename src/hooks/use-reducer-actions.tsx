@@ -11,6 +11,7 @@ interface IActions {
   removeFromCart: (id: string | number) => void;
   addToFavorite: (id: string | number) => void;
   removeFromFavorite: (id: string | number) => void;
+  clearCart: () => void;
 }
 
 export const useReducerActions = (): IActions => {
@@ -85,5 +86,6 @@ export const useReducerActions = (): IActions => {
     removeFromCart,
     addToFavorite,
     removeFromFavorite,
+    clearCart
   };
 };
