@@ -8,6 +8,7 @@ import ProductId from "./pages/products/product-id.tsx";
 import Categories from "./pages/category/categories.tsx";
 import CategoryId from "./pages/category/category-id.tsx";
 import Saved from "./pages/saved.tsx";
+import ReturnProducts from "./pages/return-products.tsx";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
             <Route path="categories/:slug" element={<CategoryId />} />
             <Route path="cart" element={<Cart />} />
             <Route path="favorites" element={<Saved />} />
+            <Route path="return-products" element={<ReturnProducts />} />
           </Route>
         </Route>
       </Routes>

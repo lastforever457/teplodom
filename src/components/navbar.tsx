@@ -43,7 +43,7 @@ const Navbar = () => {
       {
         id: 5,
         title: "Возврат товара",
-        href: "/returns",
+        href: "/return-products",
       },
     ],
     [],
@@ -125,15 +125,17 @@ const Navbar = () => {
       </div>
       <div className="px-20 flex justify-between items-center my-5">
         {navbarData.map((item: Record<string, any>, i: number) => (
-          <Button
-            key={i}
-            type="text"
-            className={
-              "text-xl hover:text-blue-500 bg-white py-5 px-7 rounded-2xl"
-            }
-          >
-            {item.title}
-          </Button>
+          <Link to={item.href}>
+            <Button
+              key={i}
+              type="text"
+              className={
+                "text-xl hover:text-blue-500 bg-white py-5 px-7 rounded-2xl"
+              }
+              >
+              {item.title}
+            </Button>
+          </Link>
         ))}
       </div>
       <Modal
