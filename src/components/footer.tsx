@@ -9,7 +9,7 @@ import {
 
 const Footer = () => {
   return (
-    <div className="px-10 lg:px-28 bg-[#2e2845] text-white py-8 w-full">
+    <div className="px-10 lg:px-28 bg-[#2e2845] text-white py-8 w-full mt-5">
       <div className="container mx-auto text-white">
         <Row gutter={[16, 16]} justify="space-between">
           <Col xs={24} md={6}>
@@ -79,4 +79,3 @@ const Footer = () => {
 };
 
 export default Footer;
-    

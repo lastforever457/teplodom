@@ -5,9 +5,9 @@ import Footer from "../components/footer.tsx";
 
 const MainLayout = () => {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <div className="px-20">
+      <div className="px-20 flex-auto">
         <Outlet />
       </div>
       <ToastContainer
@@ -22,8 +22,8 @@ const MainLayout = () => {
         pauseOnHover
         theme="dark"
       />
-      <Footer/>
-    </>
+      <Footer />
+    </div>
   );
 };
 

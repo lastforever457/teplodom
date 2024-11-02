@@ -1,4 +1,4 @@
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocationParams } from "../../hooks/use-location-params.tsx";
 import { Button, Card, Col, Pagination, Row, Typography } from "antd";
 import { Link } from "react-router-dom";
@@ -8,11 +8,11 @@ import { MdOutlineFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
 import { useReducerActions } from "../../hooks/use-reducer-actions.tsx";
 
 const Products = () => {
-  const {context} = useReducerContext()
-  const { state} = context
+  const { context } = useReducerContext();
+  const { state } = context;
   const { query } = useLocationParams();
   const { push } = useRouterPush();
-  const {addToCart, addToFavorite, removeFromFavorite} = useReducerActions()
+  const { addToCart, addToFavorite, removeFromFavorite } = useReducerActions();
 
   const [products, setProducts] = useState(state.products);
 
@@ -39,7 +39,12 @@ const Products = () => {
 
   return (
     <div>
-      <Typography.Title level={2}>Все Товары</Typography.Title>
+      <div className="flex justify-between mt-5">
+        <Typography.Title level={2}>Все Товары</Typography.Title>
+        <Link to={"filter"}>
+          <Button type="primary">Filter</Button>
+        </Link>
+      </div>
       <div className="products">
         <Row gutter={[16, 26]}>
           {products &&
@@ -67,17 +72,21 @@ const Products = () => {
                         Add to cart
                       </Button>
                       {product.isSaved ? (
-                        <Button onClick={(event) => {
-                          event.preventDefault()
-                          removeFromFavorite(product.id)
-                        }}>
+                        <Button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            removeFromFavorite(product.id);
+                          }}
+                        >
                           <MdOutlineFavorite />
                         </Button>
                       ) : (
-                        <Button onClick={(event) => {
-                          event.preventDefault()
-                          addToFavorite(product.id)
-                        }}>
+                        <Button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            addToFavorite(product.id);
+                          }}
+                        >
                           <MdOutlineFavoriteBorder />
                         </Button>
                       )}

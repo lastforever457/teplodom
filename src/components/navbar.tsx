@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal } from "antd";
+import { Badge, Button, Form, Input, Modal } from "antd";
 import { IoCartSharp, IoSearch } from "react-icons/io5";
 import { MdFavorite } from "react-icons/md";
 import { FaUser } from "react-icons/fa6";
@@ -10,8 +10,10 @@ import useAuth from "../hooks/use-auth.tsx";
 import { useForm } from "antd/es/form/Form";
 import useToastify from "../hooks/use-toastify.tsx";
 import "react-toastify/dist/ReactToastify.css";
+import useReducerContext from "../hooks/use-reducer-context.tsx";
 
 const Navbar = () => {
+  const { context } = useReducerContext();
   const { query } = useLocationParams();
   const { push } = useRouterPush();
   const { isAuthenticated, setAuthenticated } = useAuth();
@@ -46,7 +48,7 @@ const Navbar = () => {
         href: "/return-products",
       },
     ],
-    [],
+    []
   );
 
   const onClose = () => {
@@ -80,20 +82,30 @@ const Navbar = () => {
             }
             placeholder={"Search..."}
           />
-          <Link to={"/favorites"}>
-            <button
-              className={"text-xl p-4 bg-white rounded-full hover:shadow-md"}
-            >
-              <MdFavorite />
-            </button>
-          </Link>
-          <Link to={"/cart"}>
-            <button
-              className={"text-xl p-4 bg-white rounded-full hover:shadow-md"}
-            >
-              <IoCartSharp />
-            </button>
-          </Link>
+          <Badge
+            count={
+              context.state.products.filter(
+                (product: Record<string, any>) => product.isSaved
+              ).length
+            }
+          >
+            <Link to={"/favorites"}>
+              <button
+                className={"text-xl p-4 bg-white rounded-full hover:shadow-md"}
+              >
+                <MdFavorite />
+              </button>
+            </Link>
+          </Badge>
+          <Badge count={context.state.cart.length}>
+            <Link to={"/cart"}>
+              <button
+                className={"text-xl p-4 bg-white rounded-full hover:shadow-md"}
+              >
+                <IoCartSharp />
+              </button>
+            </Link>
+          </Badge>
           {!isAuthenticated ? (
             <button
               onClick={() => {
@@ -110,7 +122,7 @@ const Navbar = () => {
             <button
               onClick={() => {
                 setAuthenticated(false);
-                localStorage.removeItem('token')
+                localStorage.removeItem("token");
                 toastSuccess("Successfully logged out");
               }}
               className={
@@ -125,14 +137,13 @@ const Navbar = () => {
       </div>
       <div className="px-20 flex justify-between items-center my-5">
         {navbarData.map((item: Record<string, any>, i: number) => (
-          <Link to={item.href}>
+          <Link to={item.href} key={i}>
             <Button
-              key={i}
               type="text"
               className={
                 "text-xl hover:text-blue-500 bg-white py-5 px-7 rounded-2xl"
               }
-              >
+            >
               {item.title}
             </Button>
           </Link>

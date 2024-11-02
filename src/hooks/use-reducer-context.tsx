@@ -6,7 +6,7 @@ const useReducerContext = () => {
 
   if (!context) {
     throw new Error(
-      "useReducerContext must be used within a ReducerContextProvider",
+      "useReducerContext must be used within a ReducerContextProvider"
     );
   }
 
