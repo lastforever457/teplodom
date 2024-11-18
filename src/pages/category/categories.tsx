@@ -1,42 +1,17 @@
-import { Card, Col, Pagination, Row, Typography } from "antd";
-import { ReducerContext } from "../../contexts/reducer-context-provider.tsx";
-import { useContext, useEffect, useState } from "react";
+import { Card, Col, Row, Typography } from "antd";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { useLocationParams } from "../../hooks/use-location-params.tsx";
-import { useRouterPush } from "../../hooks/use-router-push.tsx";
 
 const Categories = () => {
-  const context = useContext(ReducerContext);
-  const { query } = useLocationParams();
-  const { push } = useRouterPush();
-  const [categories, setCategories] = useState(context?.state.categories);
+  const { categories, status } = useSelector((state: any) => state.products);
 
-  useEffect(() => {
-    if (context?.state.status !== "loading") {
-      const startIndex = ((Number(query.page) || 1) - 1) * 12;
-      const endIndex = startIndex + 12;
-      const res = context?.state.categories?.slice(startIndex, endIndex);
-      setCategories(res);
-    }
-  }, [context?.state.status, query.page, context?.state.categories]);
-
-  if (!context) {
-    return <div>Error: Context not available</div>;
-  }
-
-  const { state } = context;
-
-  if (state.status === "loading") {
+  if (status === "loading") {
     return <div>Loading...</div>;
   }
 
-  if (state.status === "error") {
+  if (status === "error") {
     return <div>Error loading data. Please try again.</div>;
   }
-
-  const handlePageChange = (page: number) => {
-    push({ query: { page } });
-  };
 
   return (
     <div>
@@ -61,14 +36,6 @@ const Categories = () => {
             </Col>
           ))}
       </Row>
-      <Pagination
-        className={"mt-5"}
-        showQuickJumper
-        defaultPageSize={12}
-        defaultCurrent={Number(query.page) || 1}
-        total={state.categories.length}
-        onChange={handlePageChange}
-      />
     </div>
   );
 };

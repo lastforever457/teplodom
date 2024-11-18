@@ -11,30 +11,33 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   brands,
   colors,
   countries,
 } from "../../contexts/reducer-context-provider";
-import { useReducerActions } from "../../hooks/use-reducer-actions";
-import useReducerContext from "../../hooks/use-reducer-context";
+import useToastify from "../../hooks/use-toastify";
+import {
+  addToCart,
+  addToFavorite,
+  removeFromFavorite,
+} from "../../redux/productsSlice";
 
 const Filter = () => {
   const [form] = Form.useForm();
-  const { context } = useReducerContext();
-  const {
-    addToFavorite,
-    removeFromFavorite,
-    addToCart,
-    setProducts: settingProducts,
-  } = useReducerActions();
+  const { products: orgProducts, tempProducts } = useSelector(
+    (state: any) => state.products
+  );
   const [products, setProducts] = useState<Record<string, any>[]>([]);
+  const dispatch = useDispatch();
+  const { toastSuccess } = useToastify();
 
   const onFinish = (values: any) => {
     const { region, priceFrom, priceTo, brands, color } = values;
 
-    let filteredProducts = [...context.state.products];
+    let filteredProducts = [...orgProducts];
 
     if (region?.length) {
       filteredProducts = filteredProducts.filter((product) =>
@@ -66,19 +69,16 @@ const Filter = () => {
       );
     }
 
-    settingProducts(filteredProducts);
-
     setProducts(filteredProducts);
   };
 
   useEffect(() => {
-    setProducts(context.state.products);
-  }, [context.state.products]);
+    setProducts(orgProducts);
+  }, [orgProducts]);
 
   const handleClear = () => {
     form.resetFields();
-    setProducts(context.state.tempProducts);
-    settingProducts(context.state.tempProducts);
+    setProducts(tempProducts);
   };
 
   return (
@@ -173,7 +173,8 @@ const Filter = () => {
                           <Button
                             onClick={(event) => {
                               event.preventDefault();
-                              addToCart(product);
+                              dispatch(addToCart(product));
+                              toastSuccess("Добавлено в корзину");
                             }}
                             type="primary"
                           >
@@ -183,7 +184,8 @@ const Filter = () => {
                             <Button
                               onClick={(event) => {
                                 event.preventDefault();
-                                removeFromFavorite(product.id);
+                                dispatch(removeFromFavorite(product.id));
+                                toastSuccess("Удалено из избранного");
                               }}
                             >
                               <MdOutlineFavorite />
@@ -192,7 +194,8 @@ const Filter = () => {
                             <Button
                               onClick={(event) => {
                                 event.preventDefault();
-                                addToFavorite(product.id);
+                                dispatch(addToFavorite(product.id));
+                                toastSuccess("Добавлено в избранное");
                               }}
                             >
                               <MdOutlineFavoriteBorder />

@@ -1,41 +1,24 @@
-import { useEffect, useState } from "react";
-import { useLocationParams } from "../../hooks/use-location-params.tsx";
-import { Button, Card, Col, Pagination, Row, Typography } from "antd";
-import { Link } from "react-router-dom";
-import { useRouterPush } from "../../hooks/use-router-push.tsx";
-import useReducerContext from "../../hooks/use-reducer-context.tsx";
+import { Button, Card, Col, Row, Typography } from "antd";
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
-import { useReducerActions } from "../../hooks/use-reducer-actions.tsx";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import {
+  addToCart,
+  addToFavorite,
+  removeFromFavorite,
+} from "../../redux/productsSlice.tsx";
 
 const Products = () => {
-  const { context } = useReducerContext();
-  const { state } = context;
-  const { query } = useLocationParams();
-  const { push } = useRouterPush();
-  const { addToCart, addToFavorite, removeFromFavorite } = useReducerActions();
+  const { status, products } = useSelector((state: any) => state.products);
+  const dispatch = useDispatch();
 
-  const [products, setProducts] = useState(state.products);
-
-  useEffect(() => {
-    if (state.status !== "loading") {
-      const startIndex = ((Number(query.page) || 1) - 1) * 12;
-      const endIndex = startIndex + 12;
-      const res = state.products?.slice(startIndex, endIndex);
-      setProducts(res);
-    }
-  }, [state.status, query.page, state.categories]);
-
-  if (state.status === "loading") {
+  if (status === "loading") {
     return <div>Loading...</div>;
   }
 
-  if (state.status === "error") {
+  if (status === "error") {
     return <div>Error loading data. Please try again.</div>;
   }
-
-  const handlePageChange = (page: number) => {
-    push({ query: { page } });
-  };
 
   return (
     <div>
@@ -68,14 +51,17 @@ const Products = () => {
                       ${product.price}
                     </p>
                     <div className="flex justify-between items-center">
-                      <Button onClick={() => addToCart(product)} type="primary">
+                      <Button
+                        onClick={() => dispatch(addToCart(product))}
+                        type="primary"
+                      >
                         Add to cart
                       </Button>
                       {product.isSaved ? (
                         <Button
                           onClick={(event) => {
                             event.preventDefault();
-                            removeFromFavorite(product.id);
+                            dispatch(removeFromFavorite(product.id));
                           }}
                         >
                           <MdOutlineFavorite />
@@ -84,7 +70,7 @@ const Products = () => {
                         <Button
                           onClick={(event) => {
                             event.preventDefault();
-                            addToFavorite(product.id);
+                            dispatch(addToFavorite(product.id));
                           }}
                         >
                           <MdOutlineFavoriteBorder />
@@ -96,14 +82,6 @@ const Products = () => {
               </Col>
             ))}
         </Row>
-        <Pagination
-          className={"my-5"}
-          showQuickJumper
-          defaultPageSize={12}
-          defaultCurrent={Number(query.page) || 1}
-          total={state.products.length}
-          onChange={handlePageChange}
-        />
       </div>
     </div>
   );

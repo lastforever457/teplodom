@@ -1,14 +1,19 @@
-import useFetchWithQueries from "../../hooks/use-fetch-with-queries.tsx";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { Button, Image } from "antd";
-import { useReducerActions } from "../../hooks/use-reducer-actions.tsx";
+import { useEffect, useState } from "react";
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import useFetchWithQueries from "../../hooks/use-fetch-with-queries.tsx";
+import {
+  addToCart,
+  addToFavorite,
+  removeFromFavorite,
+} from "../../redux/productsSlice.tsx";
 
 const ProductId = () => {
   const { fetchWithQueries } = useFetchWithQueries();
   const [product, setProduct] = useState<Record<string, any> | null>(null);
-  const { addToCart, addToFavorite, removeFromFavorite } = useReducerActions();
+  const dispatch = useDispatch();
   const { id } = useParams();
 
   useEffect(() => {
@@ -120,23 +125,29 @@ const ProductId = () => {
               </p>
             )}
             <div className="flex">
-            {product.isSaved ? (
-                <Button className="border-0 p-5 mr-2" onClick={(event) => {
-                  event.preventDefault()
-                  removeFromFavorite(product.id)
-                }}>
+              {product.isSaved ? (
+                <Button
+                  className="border-0 p-5 mr-2"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    dispatch(removeFromFavorite(product.id));
+                  }}
+                >
                   <MdOutlineFavorite />
                 </Button>
               ) : (
-                <Button className="border-0 p-5 mr-2" onClick={(event) => {
-                  event.preventDefault()
-                  addToFavorite(product.id)
-                }}>
+                <Button
+                  className="border-0 p-5 mr-2"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    dispatch(addToFavorite(product.id));
+                  }}
+                >
                   <MdOutlineFavoriteBorder />
                 </Button>
               )}
               <button
-                onClick={() => addToCart(product)}
+                onClick={() => dispatch(addToCart(product))}
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
               >
                 Add to Cart

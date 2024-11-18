@@ -1,30 +1,30 @@
 import {
   Button,
   Card,
+  Checkbox,
   Col,
-  Modal,
-  Row,
-  Typography,
   Form,
   Input,
-  Checkbox,
+  Modal,
+  Row,
   Select,
+  Typography,
 } from "antd";
-import useReducerContext from "../hooks/use-reducer-context.tsx";
-import { MdOutlineFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
-import { useReducerActions } from "../hooks/use-reducer-actions.tsx";
-import { useLocationParams } from "../hooks/use-location-params.tsx";
 import { useForm } from "antd/es/form/Form";
 import { useEffect, useMemo, useState } from "react";
-import { useRouterPush } from "../hooks/use-router-push.tsx";
+import { MdOutlineFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCart,
+  clearCart,
+  removeFromCart,
+} from "../redux/productsSlice.tsx";
 
 const Cart = () => {
-  const { context } = useReducerContext();
-  const { state } = context;
-  const { removeFromCart, addToCart, clearCart } = useReducerActions();
-  const { push } = useRouterPush();
-  const { query } = useLocationParams();
+  const { cart } = useSelector((state: any) => state.products);
+  const dispatch = useDispatch();
   const [form] = useForm();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState(1);
   const [remainedDistricts, setRemainedDistricts] =
     useState<Record<string, any>[]>();
@@ -186,7 +186,7 @@ const Cart = () => {
       <Typography.Title level={2}>Cart</Typography.Title>
       <div className="">
         <Row gutter={16}>
-          {state.cart.map((product: Record<string, any>, index: number) => (
+          {cart.map((product: Record<string, any>, index: number) => (
             <Col span={6} key={index}>
               <Card
                 className={"h-full"}
@@ -209,7 +209,7 @@ const Cart = () => {
                   <div className={"flex gap-2 items-center justify-center"}>
                     <Button
                       onClick={() => {
-                        removeFromCart(product.id);
+                        dispatch(removeFromCart(product.id));
                       }}
                       type="primary"
                     >
@@ -217,7 +217,7 @@ const Cart = () => {
                     </Button>
                     <Button
                       onClick={() => {
-                        removeFromCart(product.id);
+                        dispatch(removeFromCart(product.id));
                       }}
                       shape="default"
                     >
@@ -225,7 +225,7 @@ const Cart = () => {
                     </Button>
                     <Button
                       onClick={() => {
-                        addToCart(product);
+                        dispatch(addToCart(product));
                       }}
                       shape="default"
                     >
@@ -247,13 +247,11 @@ const Cart = () => {
           ))}
         </Row>
       </div>
-      {state.cart.length !== 0 ? (
+      {cart.length !== 0 ? (
         <Button
           type="primary"
           className="mt-5"
-          onClick={() => {
-            push({ query: { ...query, buy: true } });
-          }}
+          onClick={() => setIsModalOpen(true)}
         >
           Buy
         </Button>
@@ -275,16 +273,14 @@ const Cart = () => {
             </Button>
           </div>
         }
-        onCancel={() => {
-          push({ query: { buy: undefined } });
-        }}
+        onCancel={() => setIsModalOpen(false)}
         title={"Оформление заказа"}
-        open={!!query.buy as boolean}
+        open={isModalOpen}
       >
         <Form
           onFinish={(values: Record<string, any>) => {
-            clearCart();
-            push({ query: { buy: undefined } });
+            dispatch(clearCart());
+            setIsModalOpen(false);
           }}
           layout="vertical"
           form={form}

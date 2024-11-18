@@ -1,19 +1,19 @@
 import { Badge, Button, Form, Input, Modal } from "antd";
+import { useForm } from "antd/es/form/Form";
+import { useMemo } from "react";
+import { FaUser } from "react-icons/fa6";
 import { IoCartSharp, IoSearch } from "react-icons/io5";
 import { MdFavorite } from "react-icons/md";
-import { FaUser } from "react-icons/fa6";
-import { useMemo } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import useAuth from "../hooks/use-auth.tsx";
 import { useLocationParams } from "../hooks/use-location-params.tsx";
 import { useRouterPush } from "../hooks/use-router-push.tsx";
-import useAuth from "../hooks/use-auth.tsx";
-import { useForm } from "antd/es/form/Form";
 import useToastify from "../hooks/use-toastify.tsx";
-import "react-toastify/dist/ReactToastify.css";
-import useReducerContext from "../hooks/use-reducer-context.tsx";
 
 const Navbar = () => {
-  const { context } = useReducerContext();
+  const { products, cart } = useSelector((state: any) => state.products);
   const { query } = useLocationParams();
   const { push } = useRouterPush();
   const { isAuthenticated, setAuthenticated } = useAuth();
@@ -84,9 +84,8 @@ const Navbar = () => {
           />
           <Badge
             count={
-              context.state.products.filter(
-                (product: Record<string, any>) => product.isSaved
-              ).length
+              products.filter((product: Record<string, any>) => product.isSaved)
+                .length
             }
           >
             <Link to={"/favorites"}>
@@ -97,7 +96,7 @@ const Navbar = () => {
               </button>
             </Link>
           </Badge>
-          <Badge count={context.state.cart.length}>
+          <Badge count={cart.length}>
             <Link to={"/cart"}>
               <button
                 className={"text-xl p-4 bg-white rounded-full hover:shadow-md"}

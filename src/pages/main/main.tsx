@@ -1,14 +1,19 @@
-import SwiperComponent from "./swiper-component.tsx";
 import { Button, Card, Col, Row, Typography } from "antd";
+import { MdOutlineFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import useReducerContext from "../../hooks/use-reducer-context.tsx";
-import { MdOutlineFavoriteBorder, MdOutlineFavorite } from "react-icons/md";
-import { useReducerActions } from "../../hooks/use-reducer-actions.tsx";
+import useToastify from "../../hooks/use-toastify.tsx";
+import {
+  addToCart,
+  addToFavorite,
+  removeFromFavorite,
+} from "../../redux/productsSlice.tsx";
+import SwiperComponent from "./swiper-component.tsx";
 
 const Main = () => {
-  const { context } = useReducerContext();
-  const { state } = context;
-  const { addToCart, addToFavorite, removeFromFavorite } = useReducerActions();
+  const { categories, products } = useSelector((state: any) => state.products);
+  const dispatch = useDispatch();
+  const { toastSuccess } = useToastify();
 
   return (
     <div>
@@ -22,28 +27,36 @@ const Main = () => {
         </div>
         <div className="">
           <Row gutter={16}>
-            {state.categories.slice(0, 6).map((category: Record<string, any>, index: number) => (
-              <Col span={4} key={index}>
-                <Link to={`/categories/${category.slug}`}>
-                  <Card
-                    className={"rounded-2xl p-3 hover:shadow-xl"}
-                    cover={
-                      <div className={"h-[250px] w-full rounded-3xl overflow-hidden"}>
-                        <img
-                          className={"w-full h-full bg-center bg-cover object-cover"}
-                          alt={category.name}
-                          src={`https://picsum.photos/200/300?random=${index}`}
-                        />
+            {categories
+              .slice(0, 6)
+              .map((category: Record<string, any>, index: number) => (
+                <Col span={4} key={index}>
+                  <Link to={`/categories/${category.slug}`}>
+                    <Card
+                      className={"rounded-2xl p-3 hover:shadow-xl"}
+                      cover={
+                        <div
+                          className={
+                            "h-[250px] w-full rounded-3xl overflow-hidden"
+                          }
+                        >
+                          <img
+                            className={
+                              "w-full h-full bg-center bg-cover object-cover"
+                            }
+                            alt={category.name}
+                            src={`https://picsum.photos/200/300?random=${index}`}
+                          />
+                        </div>
+                      }
+                    >
+                      <div className="flex justify-center items-center text-2xl">
+                        <Card.Meta title={category.name} />
                       </div>
-                    }
-                  >
-                    <div className="flex justify-center items-center text-2xl">
-                      <Card.Meta title={category.name} />
-                    </div>
-                  </Card>
-                </Link>
-              </Col>
-            ))}
+                    </Card>
+                  </Link>
+                </Col>
+              ))}
           </Row>
         </div>
       </div>
@@ -56,54 +69,70 @@ const Main = () => {
         </div>
         <div className="mb-5">
           <Row gutter={[16, 16]}>
-            {state.products.slice(0, 8).map((product: Record<string, any>, index: number) => (
-              <Col span={6} key={index}>
-                <Link to={`/products/${product.id}`}>
-                  <Card
-                    className={"rounded-2xl p-3 hover:shadow-xl"}
-                    cover={
-                      <div className={"h-[300px] w-full rounded-3xl overflow-hidden"}>
-                        <img
-                          className={"w-full h-full bg-contain bg-center object-contain"}
-                          alt={product.name}
-                          src={product.images[0]}
-                        />
+            {products
+              .slice(0, 8)
+              .map((product: Record<string, any>, index: number) => (
+                <Col span={6} key={index}>
+                  <Link to={`/products/${product.id}`}>
+                    <Card
+                      className={"rounded-2xl p-3 hover:shadow-xl"}
+                      cover={
+                        <div
+                          className={
+                            "h-[300px] w-full rounded-3xl overflow-hidden"
+                          }
+                        >
+                          <img
+                            className={
+                              "w-full h-full bg-contain bg-center object-contain"
+                            }
+                            alt={product.name}
+                            src={product.images[0]}
+                          />
+                        </div>
+                      }
+                    >
+                      <Card.Meta title={product.title} />
+                      <p className={"text-xl font-semibold my-2"}>
+                        ${product.price}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <Button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            dispatch(addToCart(product));
+                            toastSuccess("Товар добавлен в корзину");
+                          }}
+                          type="primary"
+                        >
+                          Add to cart
+                        </Button>
+                        {product.isSaved ? (
+                          <Button
+                            onClick={(event) => {
+                              event.preventDefault();
+                              dispatch(removeFromFavorite(product.id));
+                              toastSuccess("Товар удален из избранного");
+                            }}
+                          >
+                            <MdOutlineFavorite />
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={(event) => {
+                              event.preventDefault();
+                              dispatch(addToFavorite(product.id));
+                              toastSuccess("Товар добавлен в избранное");
+                            }}
+                          >
+                            <MdOutlineFavoriteBorder />
+                          </Button>
+                        )}
                       </div>
-                    }
-                  >
-                    <Card.Meta title={product.title} />
-                    <p className={"text-xl font-semibold my-2"}>${product.price}</p>
-                    <div className="flex justify-between items-center">
-                      <Button onClick={(event) => {
-                        event.preventDefault()
-                        addToCart(product)
-                      }} type="primary">
-                        Add to cart
-                      </Button>
-                      {product.isSaved ? (
-                        <Button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            removeFromFavorite(product.id);
-                          }}
-                        >
-                          <MdOutlineFavorite />
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            addToFavorite(product.id);
-                          }}
-                        >
-                          <MdOutlineFavoriteBorder />
-                        </Button>
-                      )}
-                    </div>
-                  </Card>
-                </Link>
-              </Col>
-            ))}
+                    </Card>
+                  </Link>
+                </Col>
+              ))}
           </Row>
         </div>
       </div>

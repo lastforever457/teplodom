@@ -1,21 +1,29 @@
-import { useParams } from "react-router-dom";
-import useFetchWithQueries from "../../hooks/use-fetch-with-queries.tsx";
-import { useContext, useEffect, useState } from "react";
-import { ReducerContext } from "../../contexts/reducer-context-provider.tsx";
 import { Button, Card, Col, Row, Tag, Typography } from "antd";
+import { useEffect, useState } from "react";
 import { IoCartOutline } from "react-icons/io5";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import useFetchWithQueries from "../../hooks/use-fetch-with-queries.tsx";
+import useToastify from "../../hooks/use-toastify.tsx";
+import {
+  addToCart,
+  addToFavorite,
+  removeFromFavorite,
+} from "../../redux/productsSlice.tsx";
 
 const CategoryId = () => {
   const { slug } = useParams();
   const { fetchWithQueries } = useFetchWithQueries();
   const [data, setData] = useState<any>();
-  const context = useContext(ReducerContext);
+  const { status } = useSelector((state: any) => state.products);
+  const dispatch = useDispatch();
+  const { toastSuccess } = useToastify();
 
   useEffect(() => {
     const fetch = async () => {
       const res = await fetchWithQueries(
-        `/products/category/${slug?.slice(1)}`,
+        `/products/category/${slug?.slice(1)}`
       );
       setData(res);
     };
@@ -27,17 +35,11 @@ const CategoryId = () => {
     return <div>Loading...</div>;
   }
 
-  if (!context) {
-    return <div>Error: Context not available</div>;
-  }
-
-  const { state } = context;
-
-  if (state.status === "loading") {
+  if (status === "loading") {
     return <div>Loading...</div>;
   }
 
-  if (state.status === "error") {
+  if (status === "error") {
     return <div>Error loading data. Please try again.</div>;
   }
 
@@ -72,10 +74,8 @@ const CategoryId = () => {
                 <div className="flex justify-between items-center text-white">
                   <Button
                     onClick={() => {
-                      context?.dispatch({
-                        type: "ADD_TO_CART",
-                        payload: product,
-                      });
+                      dispatch(addToCart(product));
+                      toastSuccess("Добавлено в корзину");
                     }}
                     className={""}
                     style={{ background: "#ffb12a" }}
@@ -85,10 +85,8 @@ const CategoryId = () => {
                   {!product.isSaved ? (
                     <Button
                       onClick={() => {
-                        context?.dispatch({
-                          type: "ADD_TO_FAVORITE",
-                          payload: product.id,
-                        });
+                        dispatch(addToFavorite(product));
+                        toastSuccess("Добавлено в избранное");
                       }}
                       shape={"default"}
                       className={"p-2"}
@@ -99,10 +97,8 @@ const CategoryId = () => {
                   ) : (
                     <Button
                       onClick={() => {
-                        context?.dispatch({
-                          type: "REMOVE_FROM_FAVORITE",
-                          payload: product.id,
-                        });
+                        dispatch(removeFromFavorite(product.id));
+                        toastSuccess("Удалено из избранного");
                       }}
                       shape={"default"}
                       className={"p-2"}

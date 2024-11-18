@@ -1,23 +1,11 @@
 import { createRoot } from "react-dom/client";
-import "./index.css";
+import { Provider } from "react-redux";
 import App from "./App.tsx";
-import { BrowserRouter } from "react-router-dom";
-import ReducerContextProvider from "./contexts/reducer-context-provider.tsx";
-import { ConfigProvider } from "antd";
+import "./index.css";
+import store from "./redux/store.ts";
 
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#FFB12A",
-          colorPrimaryHover: "#444",
-        },
-      }}
-    >
-      <ReducerContextProvider>
-        <App />
-      </ReducerContextProvider>
-    </ConfigProvider>
-  </BrowserRouter>
+  <Provider store={store}>
+    <App />
+  </Provider>
 );
